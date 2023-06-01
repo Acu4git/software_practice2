@@ -1,10 +1,11 @@
-3.240000  76 Akechi                                                                                                                                                                                                 
-3.853000 100 Aquatan                                                                                                                                                                                                
-1.170000  30 Kawaguchi                                                                                                                                                                                              
-4.000000 135 Kawaguchi                                                                                                                                                                                              
-2.812500  63 Morimoto                                                                                                                                                                                               
+10
 0.667000  20 Mukiryokuman                                                                                                                                                                                           
-3.223000  88 Nakashima                                                                                                                                                                                              
+1.170000  30 Kawaguchi                                                                                                                                                                                              
+2.812500  63 Morimoto                                                                                                                                                                                               
 2.230000  64 Ordinaryperson                                                                                                                                                                                         
+3.240000  76 Akechi                                                                                                                                                                                                 
 3.141500  81 Pi                                                                                                                                                                                                     
 3.550000  84 Uetani                                                                                                                                                                                                 
+3.223000  88 Nakashima                                                                                                                                                                                              
+3.853000 100 Aquatan                                                                                                                                                                                                
+4.000000 135 Kawaguchi                                                                                                                                                                                              

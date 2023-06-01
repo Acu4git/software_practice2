@@ -13,6 +13,7 @@ void printToScreen(SRec *, int);
 int compGpa(const void *, const void *);
 int compCredit(const void *, const void *);
 int compName(const void *, const void *);
+void singleSort(SRec *, int, int (*)(const void *, const void *));
 int input(char *, SRec **);
 void output(char *, SRec *, int);
 
@@ -29,11 +30,11 @@ int main(int argc, char *argv[]) {
   printToScreen(student, N);
 
   if (strcmp(argv[1], "gpa") == 0)
-    qsort(student, N, sizeof(SRec), compGpa);
+    singleSort(student, N, compGpa);
   else if (strcmp(argv[1], "credit") == 0)
-    qsort(student, N, sizeof(SRec), compCredit);
+    singleSort(student, N, compCredit);
   else if (strcmp(argv[1], "name") == 0)
-    qsort(student, N, sizeof(SRec), compName);
+    singleSort(student, N, compName);
   else {
     fprintf(stderr, "Invalid first argument:%s\n", argv[1]);
     exit(1);
@@ -48,7 +49,8 @@ int main(int argc, char *argv[]) {
 
 void printToScreen(SRec *p, int n) {
   for (int i = 0; i < n; i++) {
-    printf("%f %3d %-s\n", p[i].gpa, p[i].credit, p[i].name);
+    printf("%f %3d %-s", p[i].gpa, p[i].credit, p[i].name);
+    putchar('\n');
   }
   putchar('\n');
 }
@@ -73,6 +75,24 @@ int compCredit(const void *a, const void *b) {
 
 int compName(const void *a, const void *b) {
   return strcmp(((SRec *)a)->name, ((SRec *)b)->name);
+}
+
+void singleSort(SRec *arr, int n_array,
+                int (*cmp)(const void *, const void *)) {
+  int i, j, k;
+  SRec temp;
+  for (i = 1; i < n_array; i++) {
+    temp = arr[i];
+    for (j = 0; j < i; j++) {
+      if (cmp(&temp, &arr[j]) == -1) {
+        for (k = i - 1; k >= j; k--) {
+          arr[k + 1] = arr[k];
+        }
+        arr[j] = temp;
+        break;
+      }
+    }
+  }
 }
 
 int input(char *sfname, SRec **p) {
@@ -102,11 +122,11 @@ int input(char *sfname, SRec **p) {
   return n;
 }
 
-void output(char *tfname, SRec *p, int n) {
+void output(char *tfname, SRec *p, int n_array) {
   FILE *tp;
   tp = fopen(tfname, "w");
-
-  for (int i = 0; i < n; i++) {
+  fprintf(tp, "%d\n", n_array);
+  for (int i = 0; i < n_array; i++) {
     fprintf(tp, "%-f %3d %-199s\n", p[i].gpa, p[i].credit, p[i].name);
   }
 
