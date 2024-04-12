@@ -5,6 +5,10 @@
 #include <string.h>
 
 #define N_MAX 10
+#define BUF_SIZE 1024
+#define INT_STRLEN_MAX 10
+#define IS_PLUS 0
+#define IS_MINUS 0
 
 int input(int[], char*);
 void sort(int[], int);
@@ -20,7 +24,6 @@ int main(int argc, char* argv[]) {
   }
 
   int arr[N_MAX], n;
-  for (int i = 0; i < N_MAX; i++) arr[i] = INT_MAX;
   n = input(arr, argv[1]);
   if (!n) {
     fprintf(stderr, "Abort!\n");
@@ -37,19 +40,24 @@ int main(int argc, char* argv[]) {
 
 int input(int arr[], char* inFilename) {
   FILE* fp = fopen(inFilename, "r");
+  if (fp == NULL) {
+    fprintf(stderr, "Error: can't open the input file \"%s\"\n", inFilename);
+    return 0;
+  }
 
   int len = 0;
-  char buf[32];
+  char buf[BUF_SIZE + 1];
   while (fscanf(fp, "%s", buf) == 1) {
     if (len >= N_MAX) {
-      fprintf(stderr, "Error: number of data overflow\n");
-      fprintf(stderr, "use a input file which has 10 or less data.\n");
+      fprintf(stderr, "Error: data size is too large\n");
+      fprintf(stderr, "Use an input file which has 10 or less data.\n");
       return 0;
     }
 
     if (!isInteger(buf)) {
-      fprintf(stderr, "Error: input data contains invalid value\n");
-      fprintf(stderr, "input data must contain only <int> values.\n");
+      fprintf(stderr, "Error: input data contains an invalid value\n");
+      fprintf(stderr, "\t=> \"%s\"\n", buf);
+      fprintf(stderr, "Input file must contain only <int> values.\n");
       return 0;
     }
 
@@ -58,7 +66,7 @@ int input(int arr[], char* inFilename) {
 
   if (len == 0) {
     fprintf(stderr, "Error: data not found\n");
-    fprintf(stderr, "input file must contain at least 1 data.\n");
+    fprintf(stderr, "Input file must contain at least 1 data.\n");
     return 0;
   }
 
@@ -70,20 +78,35 @@ void sort(int arr[], int len) {}
 
 void output(int arr[], int len, char* outFilename) {
   FILE* fp = fopen(outFilename, "w");
+  if (fp == NULL) {
+    fprintf(stderr, "Error: can't open the output file \"%s\"\n", outFilename);
+  }
   for (int i = 0; i < len; i++) fprintf(fp, "%d ", arr[i]);
   fprintf(fp, "\n");
 }
 
 bool isInteger(char* str) {
-  int i = 0;
-  while (str[i] != '\0') {
-    if (i == 0) {
-      if (!(str[i] == '-' || str[i] == '+' || '0' <= str[i] || str[i] <= '9'))
-        return false;
-    } else if (i > 0) {
-      if (!('0' <= str[i] || str[i] <= '9')) return false;
+  int sign = IS_PLUS;
+
+  for (int i = 0; str[i] != '\0'; i++) {
+    if (i >= INT_STRLEN_MAX ||
+        (i == INT_STRLEN_MAX - 1 && strncmp(str, "2147483647", 10) == 1)) {
+      fprintf(stderr, "stack overflow\n");
+      return false;
     }
-    i++;
+
+    if (str[1] == '\0' && !('0' <= str[0] && str[0] <= '9')) {
+      return false;
+    } else if (i == 0) {
+      if (!(str[i] == '-' || str[i] == '+' ||
+            ('0' <= str[i] && str[i] <= '9'))) {
+        return false;
+      }
+    } else if (i > 0) {
+      if (!('0' <= str[i] && str[i] <= '9')) {
+        return false;
+      }
+    }
   }
 
   return true;
