@@ -56,10 +56,11 @@ int input(char *sfname, SRec **p) {
   }
 
   int n;
-  if (fscanf(sp, "%d", &n) == EOF) {
+  if (fscanf(sp, "%d", &n) == 0) {
     fprintf(stderr, "\033[33mError: falied to parse total num\n");
     fprintf(stderr,
             "Please check if the data types are appropriate.\033[39m\n");
+    exit(EXIT_FAILURE);
   }
   if (feof(sp)) {
     fprintf(stderr, "\033[33mError: no data\n");
@@ -69,8 +70,8 @@ int input(char *sfname, SRec **p) {
     exit(EXIT_FAILURE);
   }
   if ((*p = (SRec *)malloc(sizeof(SRec) * n)) == NULL) {
-    fprintf(stderr, "\033[33mError: memory shortage\n");
-    fprintf(stderr, "Data size is too large.\n\033[39m");
+    fprintf(stderr, "\033[33mError: failed to allocate memory\n");
+    fprintf(stderr, "Please check if the data size is appropriate.\n\033[39m");
     exit(EXIT_FAILURE);
   }
 
