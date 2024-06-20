@@ -1,0 +1,10 @@
+3.240000  76 Jojo
+3.853000 100 Aquatan
+1.170000  30 Bob
+4.000000 135 Kawaguchi
+2.812500  63 Morimoto
+0.667000  20 Kawaguchi
+3.223000  88 Nakashima
+2.230000  64 Vega
+3.141500  81 Pi
+3.550000  84 Uetani

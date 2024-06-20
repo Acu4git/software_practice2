@@ -27,6 +27,8 @@ int main(int argc, char *argv[]) {
   printf("----------Input----------\n");
   printToScreen(head);
   output(argv[2], head);
+  printf("----------Output----------\n");
+  printToScreen(head);
   return 0;
 }
 
@@ -50,7 +52,7 @@ SRec *input(char *inFileName) {
   }
   // 空データならカウントが進まない
   if (cnt == 0) {
-    fprintf(stderr, "No data.");
+    fprintf(stderr, "No data.\n");
     exit(1);
   }
   fclose(sp);
@@ -78,6 +80,7 @@ void printToScreen(SRec *p) {
     printf("%-f %3d %-s\n", p->gpa, p->credit, p->name);
     p = p->next;
   }
+  putchar('\n');
 }
 
 void output(char *outFileName, SRec *p) {
