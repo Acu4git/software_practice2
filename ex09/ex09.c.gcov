@@ -1,0 +1,377 @@
+        -:    0:Source:ex09.c
+        -:    0:Graph:ex09.gcno
+        -:    0:Data:ex09.gcda
+        -:    0:Runs:15
+        -:    1:#include <errno.h>
+        -:    2:#include <stdio.h>
+        -:    3:#include <stdlib.h>
+        -:    4:#include <string.h>
+        -:    5:#define MAX_NAME_LENGTH 200
+        -:    6:#define BUFSIZE 512
+        -:    7:
+        -:    8:typedef struct school_record SRec;
+        -:    9:struct school_record {
+        -:   10:    float gpa;
+        -:   11:    int credit;
+        -:   12:    char name[MAX_NAME_LENGTH];
+        -:   13:    SRec *next;
+        -:   14:};
+        -:   15:
+        -:   16:SRec *input(char *);
+        -:   17:int output(char *, SRec *);
+        -:   18:void printRecords(SRec *);
+        -:   19:void freeList(SRec *);
+        -:   20:int compGpa(const void *, const void *);
+        -:   21:int compCredit(const void *, const void *);
+        -:   22:int compName(const void *, const void *);
+        -:   23:SRec *listSort(SRec *, int (*)(const void *, const void *));
+        -:   24:
+function main called 15 returned 7% blocks executed 67%
+       15:   25:int main(int argc, char *argv[]) {
+       15:   26:    if (argc != 4) {
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+    #####:   27:        fprintf(stderr, "Error: invalid arguments\n");
+call    0 never executed
+    #####:   28:        fprintf(stderr, "Usage: ./ex09 <target> <inFile> <outFile>\n");
+call    0 never executed
+    #####:   29:        exit(EXIT_FAILURE);
+call    0 never executed
+        -:   30:    }
+        -:   31:
+        -:   32:    SRec *student;
+       15:   33:    if ((student = input(argv[2])) == NULL) {
+call    0 returned 100%
+branch  1 taken 93% (fallthrough)
+branch  2 taken 7%
+       14:   34:        fprintf(stderr, "Failed\n");
+call    0 returned 100%
+       14:   35:        exit(EXIT_FAILURE);
+call    0 returned 0%
+        -:   36:    }
+        1:   37:    printf("---------Input---------\n");
+call    0 returned 100%
+        1:   38:    printRecords(student);
+call    0 returned 100%
+        -:   39:
+        1:   40:    if (strcmp(argv[1], "gpa") == 0)
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+        1:   41:        student = listSort(student, compGpa);
+call    0 returned 100%
+    #####:   42:    else if (strcmp(argv[1], "credit") == 0)
+branch  0 never executed
+branch  1 never executed
+    #####:   43:        student = listSort(student, compCredit);
+call    0 never executed
+    #####:   44:    else if (strcmp(argv[1], "name") == 0)
+branch  0 never executed
+branch  1 never executed
+    #####:   45:        student = listSort(student, compName);
+call    0 never executed
+        -:   46:    else {
+    #####:   47:        fprintf(stderr,
+        -:   48:                "Error: invalid first argument \'%s\'\n"
+        -:   49:                "Please choice \'gpa\', \'credit\' or \'name\'\n",
+    #####:   50:                argv[1]);
+call    0 never executed
+        -:   51:    }
+        -:   52:
+        1:   53:    int ok = output(argv[3], student);
+call    0 returned 100%
+        1:   54:    if (ok) {
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+        1:   55:        printf("---------Output---------\n");
+call    0 returned 100%
+        1:   56:        printRecords(student);
+call    0 returned 100%
+        -:   57:    }
+        -:   58:
+        1:   59:    freeList(student);
+call    0 returned 100%
+        -:   60:
+        1:   61:    return 0;
+        -:   62:}
+        -:   63:
+function input called 15 returned 100% blocks executed 86%
+       15:   64:SRec *input(char *inFilename) {
+        -:   65:    FILE *fp;
+       15:   66:    if ((fp = fopen(inFilename, "r")) == NULL) {
+call    0 returned 100%
+branch  1 taken 0% (fallthrough)
+branch  2 taken 100%
+    #####:   67:        fprintf(stderr, "Failed to open the file \'%s\': %s\n", inFilename,
+call    0 never executed
+    #####:   68:                strerror(errno));
+call    0 never executed
+    #####:   69:        return NULL;
+        -:   70:    }
+        -:   71:
+       15:   72:    SRec *head = NULL, *p;
+       15:   73:    SRec **tail = &head;
+        -:   74:
+        -:   75:    char buf[BUFSIZE];
+        -:   76:    char *token, *endptr;
+       15:   77:    int row = 1;
+       34:   78:    while (fgets(buf, sizeof(buf), fp) != NULL) {
+call    0 returned 100%
+branch  1 taken 94%
+branch  2 taken 6% (fallthrough)
+       32:   79:        if ((p = (SRec *)malloc(sizeof(SRec))) == NULL) {
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+    #####:   80:            perror("malloc() (input)");
+call    0 never executed
+    #####:   81:            return NULL;
+        -:   82:        }
+        -:   83:
+        -:   84:        // GPA
+       32:   85:        errno = 0;
+       32:   86:        token = strtok(buf, " \t");
+call    0 returned 100%
+       32:   87:        p->gpa = strtof(token, &endptr);
+call    0 returned 100%
+       32:   88:        if (endptr == token) {
+branch  0 taken 6% (fallthrough)
+branch  1 taken 94%
+        2:   89:            fprintf(stderr, "Error(record %d, GPA): Cannot parse any digits\n",
+call    0 returned 100%
+        -:   90:                    row);
+        2:   91:            return NULL;
+        -:   92:        }
+       30:   93:        if (errno != 0) {
+branch  0 taken 7% (fallthrough)
+branch  1 taken 93%
+        2:   94:            fprintf(stderr, "Error(record %d, GPA): %s\n", row,
+call    0 returned 100%
+        2:   95:                    strerror(errno));
+call    0 returned 100%
+        2:   96:            return NULL;
+        -:   97:        }
+       28:   98:        if (*endptr != '\0') {
+branch  0 taken 4% (fallthrough)
+branch  1 taken 96%
+        1:   99:            fprintf(stderr,
+call    0 returned 100%
+        -:  100:                    "Error(record %d, GPA): Invalid strings were found\n", row);
+        1:  101:            return NULL;
+        -:  102:        }
+       27:  103:        if (p->gpa < 0.0f) {
+branch  0 taken 4% (fallthrough)
+branch  1 taken 96%
+        1:  104:            fprintf(stderr, "Error(record %d, GPA): Negative GPA\n", row);
+call    0 returned 100%
+        1:  105:            return NULL;
+        -:  106:        }
+        -:  107:        // Credit
+       26:  108:        errno = 0;
+       26:  109:        token = strtok(NULL, " \t");
+call    0 returned 100%
+       26:  110:        if (token == NULL) {
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+    #####:  111:            fprintf(stderr, "Error(record %d, Credit): No more data\n", row);
+call    0 never executed
+    #####:  112:            return NULL;
+        -:  113:        }
+       26:  114:        p->credit = (int)strtol(token, &endptr, 10);
+call    0 returned 100%
+       26:  115:        if (endptr == token) {
+branch  0 taken 8% (fallthrough)
+branch  1 taken 92%
+        2:  116:            fprintf(stderr,
+call    0 returned 100%
+        -:  117:                    "Error(record %d, Credit): Cannot parse any digits\n", row);
+        2:  118:            return NULL;
+        -:  119:        }
+       24:  120:        if (errno != 0) {
+branch  0 taken 4% (fallthrough)
+branch  1 taken 96%
+        1:  121:            fprintf(stderr, "Error(record %d, Credit): %s\n", row,
+call    0 returned 100%
+        1:  122:                    strerror(errno));
+call    0 returned 100%
+        1:  123:            return NULL;
+        -:  124:        }
+       23:  125:        if (*endptr != '\0') {
+branch  0 taken 9% (fallthrough)
+branch  1 taken 91%
+        2:  126:            fprintf(stderr,
+call    0 returned 100%
+        -:  127:                    "Error(record %d, Credit): Invalid strings were found\n",
+        -:  128:                    row);
+        2:  129:            return NULL;
+        -:  130:        }
+       21:  131:        if (p->credit < 0) {
+branch  0 taken 5% (fallthrough)
+branch  1 taken 95%
+        1:  132:            fprintf(stderr, "Error(record %d, Credit): Negative Credit\n", row);
+call    0 returned 100%
+        1:  133:            return NULL;
+        -:  134:        }
+        -:  135:        // Name
+       20:  136:        errno = 0;
+       20:  137:        token = strtok(NULL, " \t");
+call    0 returned 100%
+       20:  138:        if (token == NULL) {
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+    #####:  139:            fprintf(stderr, "Error(record %d, Name): No more data\n", row);
+call    0 never executed
+    #####:  140:            return NULL;
+        -:  141:        }
+       20:  142:        if (strlen(token) >= MAX_NAME_LENGTH) {
+branch  0 taken 5% (fallthrough)
+branch  1 taken 95%
+        1:  143:            fprintf(stderr,
+call    0 returned 100%
+        -:  144:                    "Error(record %d, Name): Name size is too large\n"
+        -:  145:                    "Name length must be less than 200\n",
+        -:  146:                    row);
+        1:  147:            return NULL;
+        -:  148:        }
+       19:  149:        if (token[strlen(token) - 1] == '\n') token[strlen(token) - 1] = '\0';
+branch  0 taken 95% (fallthrough)
+branch  1 taken 5%
+       19:  150:        snprintf(p->name, MAX_NAME_LENGTH, "%s", token);
+        -:  151:
+        -:  152:        // セルの更新
+       19:  153:        p->next = NULL;
+       19:  154:        *tail = p;
+       19:  155:        tail = &(p->next);
+        -:  156:
+       19:  157:        row++;
+        -:  158:    }
+        -:  159:
+        -:  160:    // 入力ファイルが空のとき
+        2:  161:    if (feof(fp) && row == 1) {
+call    0 returned 100%
+branch  1 taken 100% (fallthrough)
+branch  2 taken 0%
+branch  3 taken 50% (fallthrough)
+branch  4 taken 50%
+        1:  162:        fprintf(stderr, "Error: \'%s\' contains no data\n", inFilename);
+call    0 returned 100%
+        1:  163:        return NULL;
+        -:  164:    }
+        -:  165:
+        1:  166:    fclose(fp);
+call    0 returned 100%
+        1:  167:    return head;
+        -:  168:}
+        -:  169:
+function output called 1 returned 100% blocks executed 75%
+        1:  170:int output(char *outFilename, SRec *list) {
+        -:  171:    FILE *fp;
+        1:  172:    if ((fp = fopen(outFilename, "w")) == NULL) {
+call    0 returned 100%
+branch  1 taken 0% (fallthrough)
+branch  2 taken 100%
+    #####:  173:        fprintf(stderr, "Failed to open the file \'%s\': %s\n", outFilename,
+call    0 never executed
+    #####:  174:                strerror(errno));
+call    0 never executed
+    #####:  175:        return 0;
+        -:  176:    }
+        -:  177:
+        5:  178:    while (list != NULL) {
+branch  0 taken 80%
+branch  1 taken 20% (fallthrough)
+        4:  179:        fprintf(fp, "%9f %3d %s\n", list->gpa, list->credit, list->name);
+call    0 returned 100%
+        4:  180:        list = list->next;
+        -:  181:    }
+        -:  182:
+        1:  183:    fclose(fp);
+call    0 returned 100%
+        1:  184:    return 1;
+        -:  185:}
+        -:  186:
+function printRecords called 2 returned 100% blocks executed 100%
+        2:  187:void printRecords(SRec *list) {
+       10:  188:    while (list != NULL) {
+branch  0 taken 80%
+branch  1 taken 20% (fallthrough)
+        8:  189:        printf("%9f %3d %s\n", list->gpa, list->credit, list->name);
+call    0 returned 100%
+        8:  190:        list = list->next;
+        -:  191:    }
+        2:  192:}
+        -:  193:
+function freeList called 1 returned 100% blocks executed 100%
+        1:  194:void freeList(SRec *head) {
+        -:  195:    SRec *temp;
+        5:  196:    while (head != NULL) {
+branch  0 taken 80%
+branch  1 taken 20% (fallthrough)
+        4:  197:        temp = head->next;
+        4:  198:        free(head);
+        4:  199:        head = temp;
+        -:  200:    }
+        1:  201:}
+        -:  202:
+function compGpa called 10 returned 100% blocks executed 100%
+       10:  203:int compGpa(const void *a, const void *b) {
+       10:  204:    if (((SRec *)a)->gpa > ((SRec *)b)->gpa)
+branch  0 taken 10% (fallthrough)
+branch  1 taken 90%
+        1:  205:        return 1;
+        9:  206:    else if (((SRec *)a)->gpa < ((SRec *)b)->gpa)
+branch  0 taken 56% (fallthrough)
+branch  1 taken 44%
+        5:  207:        return -1;
+        -:  208:    else
+        4:  209:        return 0;
+        -:  210:}
+        -:  211:
+function compCredit called 0 returned 0% blocks executed 0%
+    #####:  212:int compCredit(const void *a, const void *b) {
+    #####:  213:    if (((SRec *)a)->credit > ((SRec *)b)->credit)
+branch  0 never executed
+branch  1 never executed
+    #####:  214:        return 1;
+    #####:  215:    else if (((SRec *)a)->credit < ((SRec *)b)->credit)
+branch  0 never executed
+branch  1 never executed
+    #####:  216:        return -1;
+        -:  217:    else
+    #####:  218:        return 0;
+        -:  219:}
+        -:  220:
+function compName called 0 returned 0% blocks executed 0%
+    #####:  221:int compName(const void *a, const void *b) {
+    #####:  222:    return strcmp(((SRec *)a)->name, ((SRec *)b)->name);
+        -:  223:}
+        -:  224:
+function listSort called 1 returned 100% blocks executed 100%
+        1:  225:SRec *listSort(SRec *list, int (*comp)(const void *, const void *)) {
+        1:  226:    SRec *sorted = NULL, *elem;
+        -:  227:    SRec **p, **max;
+        5:  228:    while (list != NULL) {
+branch  0 taken 80%
+branch  1 taken 20% (fallthrough)
+        -:  229:        // 最大値の探索
+        4:  230:        p = max = &list;
+       14:  231:        while (*p != NULL) {
+branch  0 taken 71%
+branch  1 taken 29% (fallthrough)
+       10:  232:            if (comp(*p, *max) >= 1) max = p;
+call    0 returned 100%
+branch  1 taken 10% (fallthrough)
+branch  2 taken 90%
+       10:  233:            p = &((*p)->next);
+        -:  234:        }
+        -:  235:
+        -:  236:        // リストから削除
+        4:  237:        elem = *max;
+        4:  238:        *max = (*max)->next;
+        4:  239:        elem->next = NULL;
+        -:  240:
+        -:  241:        // ソート済みのリストに挿入
+        4:  242:        elem->next = sorted;
+        4:  243:        sorted = elem;
+        -:  244:    }
+        -:  245:
+        1:  246:    return sorted;
+        -:  247:}

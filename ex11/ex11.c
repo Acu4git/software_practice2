@@ -11,6 +11,7 @@ struct school_record {
     int credit;
     char name[MAX_NAME_LENGTH];
     SRec *next;
+    SRec *left, *right;
 };
 
 SRec *input(char *);
@@ -20,7 +21,7 @@ void freeList(SRec *);
 int compGpa(const void *, const void *);
 int compCredit(const void *, const void *);
 int compName(const void *, const void *);
-SRec *listSort(SRec *, int (*)(const void *, const void *));
+SRec *binTreeSort(SRec *, int (*)(const void *, const void *));
 
 int main(int argc, char *argv[]) {
     if (argc != 4) {
@@ -38,11 +39,11 @@ int main(int argc, char *argv[]) {
     printRecords(student);
 
     if (strcmp(argv[1], "gpa") == 0)
-        student = listSort(student, compGpa);
+        student = binTreeSort(student, compGpa);
     else if (strcmp(argv[1], "credit") == 0)
-        student = listSort(student, compCredit);
+        student = binTreeSort(student, compCredit);
     else if (strcmp(argv[1], "name") == 0)
-        student = listSort(student, compName);
+        student = binTreeSort(student, compName);
     else {
         fprintf(stderr,
                 "Error: invalid first argument \'%s\'\n"
@@ -150,7 +151,7 @@ SRec *input(char *inFilename) {
         snprintf(p->name, MAX_NAME_LENGTH, "%s", token);
 
         // セルの更新
-        p->next = NULL;
+        p->next = p->left = p->right = NULL;
         *tail = p;
         tail = &(p->next);
 
@@ -222,25 +223,21 @@ int compName(const void *a, const void *b) {
     return strcmp(((SRec *)a)->name, ((SRec *)b)->name);
 }
 
-SRec *listSort(SRec *list, int (*comp)(const void *, const void *)) {
-    SRec *sorted = NULL, *elem;
-    SRec **p, **max;
-    while (list != NULL) {
-        // 最大値の探索
-        p = max = &list;
-        while (*p != NULL) {
-            if (comp(*p, *max) >= 1) max = p;
-            p = &((*p)->next);
+SRec *binTreeSort(SRec *list, int (*comp)(const void *, const void *)) {
+    SRec *sorted = NULL, *tree = list;
+    SRec **p = &tree;
+
+    while (*p != NULL) {
+        int order = comp(*p, list->next);
+        if (order < 0) {
+            p = &((*p)->left);
+        } else if (order > 0) {
+            p = &((*p)->right);
+        } else {
+            *p = list->next;
+            list = list->next;
+            if (list->next == NULL) break;
         }
-
-        // リストから削除
-        elem = *max;
-        *max = (*max)->next;
-        elem->next = NULL;
-
-        // ソート済みのリストに挿入
-        elem->next = sorted;
-        sorted = elem;
     }
 
     return sorted;
