@@ -16,17 +16,18 @@ struct school_record {
 
 SRec *input(char *);
 int output(char *, SRec *);
-void printRecords(SRec *);
+void dumpList(SRec *);
 void freeList(SRec *);
 int compGpa(const void *, const void *);
 int compCredit(const void *, const void *);
 int compName(const void *, const void *);
+void insert(SRec **, SRec *, int (*)(const void *, const void *));
 SRec *binTreeSort(SRec *, int (*)(const void *, const void *));
 
 int main(int argc, char *argv[]) {
     if (argc != 4) {
         fprintf(stderr, "Error: invalid arguments\n");
-        fprintf(stderr, "Usage: ./ex09 <target> <inFile> <outFile>\n");
+        fprintf(stderr, "Usage: ./ex11 <target> <inFile> <outFile>\n");
         exit(EXIT_FAILURE);
     }
 
@@ -36,7 +37,7 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
     printf("---------Input---------\n");
-    printRecords(student);
+    dumpList(student);
 
     if (strcmp(argv[1], "gpa") == 0)
         student = binTreeSort(student, compGpa);
@@ -54,7 +55,7 @@ int main(int argc, char *argv[]) {
     int ok = output(argv[3], student);
     if (ok) {
         printf("---------Output---------\n");
-        printRecords(student);
+        dumpList(student);
     }
 
     freeList(student);
@@ -185,9 +186,13 @@ int output(char *outFilename, SRec *list) {
     return 1;
 }
 
-void printRecords(SRec *list) {
+void dumpList(SRec *list) {
     while (list != NULL) {
-        printf("%9f %3d %s\n", list->gpa, list->credit, list->name);
+        printf(
+            "(%5.3f %3d %10s) address:%p\n"
+            "left:%-14p\tright:%p\n"
+            "----------------------------------------------------------\n",
+            list->gpa, list->credit, list->name, list, list->left, list->right);
         list = list->next;
     }
 }
@@ -223,22 +228,30 @@ int compName(const void *a, const void *b) {
     return strcmp(((SRec *)a)->name, ((SRec *)b)->name);
 }
 
-SRec *binTreeSort(SRec *list, int (*comp)(const void *, const void *)) {
-    SRec *sorted = NULL, *tree = list;
-    SRec **p = &tree;
-
+void insert(SRec **tree, SRec *elem, int (*comp)(const void *, const void *)) {
+    SRec **p = tree;
     while (*p != NULL) {
-        int order = comp(*p, list->next);
-        if (order < 0) {
+        int order = comp(elem, *p);
+        if (order <= 0)
             p = &((*p)->left);
-        } else if (order > 0) {
+        else if (order > 0)
             p = &((*p)->right);
-        } else {
-            *p = list->next;
-            list = list->next;
-            if (list->next == NULL) break;
-        }
+    }
+    *p = elem;
+}
+
+SRec *binTreeSort(SRec *list, int (*comp)(const void *, const void *)) {
+    SRec *sorted, *tree, *p;
+    sorted = tree = NULL;
+    p = list;
+
+    // 二分木の作成
+    while (p != NULL) {
+        insert(&tree, p, comp);
+        p = p->next;
     }
 
-    return sorted;
+    // ソート(未実装)
+
+    return list;  // 課題11では，ソートせずに帰す
 }
