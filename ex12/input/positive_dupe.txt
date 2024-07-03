@@ -2,4 +2,5 @@
 1.154160 90 Hoge
 4.00 140 Kawaguchi
 0.00 0 Namakemono
-4.00 140 Kawaguchi
+4.00 140 Eishu
+1.15 81 Pigemon

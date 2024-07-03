@@ -16,6 +16,7 @@ struct school_record {
 
 SRec *input(char *);
 int output(char *, SRec *);
+void printRecords(SRec *);
 void dumpList(SRec *);
 void freeList(SRec *);
 int compGpa(const void *, const void *);
@@ -249,14 +250,13 @@ void insert(SRec **tree, SRec *elem, int (*comp)(const void *, const void *)) {
 }
 
 SRec *scan(SRec *node, SRec *next) {
-    if (node == NULL) return NULL;
+    if (node == NULL) return next;
+
     SRec *head = NULL;
     // 左部分木
     head = scan(node->left, node);
-    // ノードの処理
-    node->next = node->right;
     // 右部分木
-    scan(node->right, next);
+    node->next = scan(node->right, next);
 
     return head;
 }
