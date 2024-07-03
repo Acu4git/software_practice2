@@ -1,0 +1,4 @@
+3.14 81 Pi
+1.154160 90 Hoge
+4.00 140 Kawaguchi
+null 0 Namakemono
