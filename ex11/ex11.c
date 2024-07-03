@@ -252,6 +252,7 @@ SRec *binTreeSort(SRec *list, int (*comp)(const void *, const void *)) {
     }
 
     // ソート(未実装)
+    sorted = list;
 
-    return list;  // 課題11では，ソートせずに帰す
+    return sorted;  // 課題11では，ソートせずに帰す
 }
