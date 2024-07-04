@@ -1,6 +1,6 @@
- 4.000000 140 Eishu
+ 3.140000  81 Pi
  1.154160  90 Hoge
  4.000000 140 Kawaguchi
  0.000000   0 Namakemono
- 3.140000  81 Pi
- 1.150000  81 Pigemon
+ 2.250000  91 Pikachu
+ 3.330000  33 Sansan

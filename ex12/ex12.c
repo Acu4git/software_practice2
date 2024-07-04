@@ -17,7 +17,7 @@ struct school_record {
 SRec *input(char *);
 int output(char *, SRec *);
 void printRecords(SRec *);
-void dumpList(SRec *);
+// void dumpList(SRec *);
 void freeList(SRec *);
 int compGpa(const void *, const void *);
 int compCredit(const void *, const void *);
@@ -195,16 +195,17 @@ void printRecords(SRec *list) {
     }
 }
 
-void dumpList(SRec *list) {
-    while (list != NULL) {
-        printf(
-            "(%5.3f %3d %10s) address:%p\n"
-            "left:%-14p\tright:%p\n"
-            "----------------------------------------------------------\n",
-            list->gpa, list->credit, list->name, list, list->left, list->right);
-        list = list->next;
-    }
-}
+// void dumpList(SRec *list) {
+//     while (list != NULL) {
+//         printf(
+//             "(%5.3f %3d %10s) address:%p\n"
+//             "left:%-14p\tright:%p\n"
+//             "----------------------------------------------------------\n",
+//             list->gpa, list->credit, list->name, list, list->left,
+//             list->right);
+//         list = list->next;
+//     }
+// }
 
 void freeList(SRec *head) {
     SRec *temp;
