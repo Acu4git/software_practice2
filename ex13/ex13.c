@@ -65,11 +65,11 @@ int main(int argc, char *argv[]) {
         "Sort time: %f sec\n",
         getListLen(student), (double)(clk_end - clk_start) / CLOCKS_PER_SEC);
 
-    // int ok = output(argv[3], student);
-    // if (ok) {
-    //     printf("---------Output---------\n");
-    //     printRecords(student);
-    // }
+    int ok = output(argv[3], student);
+    if (ok) {
+        // printf("---------Output---------\n");
+        // printRecords(student);
+    }
 
     freeList(student);
 
